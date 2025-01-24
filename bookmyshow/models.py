@@ -115,3 +115,8 @@ class Payment(BaseModel):
     mode = models.CharField(max_length=50)
     status = models.CharField(max_length=50)
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+
+class BookingStatus(models.TextChoices):
+    BOOKED = 'BOOKED', 'Booked'
+    CANCELLED = 'CANCELLED', 'Cancelled'
+    IN_PROGRESS = 'IN_PROGRESS', 'In Progress'
