@@ -30,6 +30,6 @@ class BookingViewSet(viewsets.ViewSet):
             return resp.data
 
         except Exception as e:
-            print(e)
+            raise e
 
 

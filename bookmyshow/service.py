@@ -11,7 +11,7 @@ class BookShowService:
     def get_data(self, user_id, show_seats_id, show):
         user = User.objects.get(pk=user_id)
         show = Show.objects.get(pk=show)
-        show_seats = ShowSeat.objects.filter(id__in=show_seats_id).order_by('seat_id')
+        show_seats = ShowSeat.objects.filter(id__in=show_seats_id, show_id=show.id).order_by('seat_id')
         return user, show, show_seats
 
     def validate_booking(self, show_seats, show):
@@ -20,12 +20,14 @@ class BookShowService:
         if len(show_seats) > 10:
             raise OverflowError("seats length must be less than 10")
         # check if valid show..
-
-        if show.start_time > datetime.datetime.now():
-            raise Show.DoesNotExist
+        #
+        # if show.start_time >= datetime.datetime.now():
+        #     raise Show.DoesNotExist
 
         #  check if seats exits and not booked
 
+        if show_seats is None or len(show_seats) == 0:
+            raise ShowSeat.DoesNotExist
         for show_seat in show_seats:
             if show_seat.show_seat_status != showSeatStatus.AVAILABLE:
                 raise ShowSeat.DoesNotExist
@@ -53,6 +55,8 @@ class BookShowService:
             booking_status=BookingStatus.IN_PROGRESS,
             ticket_number=random.randint(1, 999999),
         )
+
+        booking.save()
         # TODO: take payment against booking
         for show_seat in show_seats:
             show_seat.show_seat_status = showSeatStatus.RESERVED
